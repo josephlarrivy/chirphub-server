@@ -52,6 +52,7 @@ class User(db.Model):
             'username': self.username,
             'avatar': self.avatar,
             'displayname': self.displayname,
+            'authenticated' : True
         }
         encoded_payload = base64.urlsafe_b64encode(json.dumps(payload).encode())
         return encoded_payload
