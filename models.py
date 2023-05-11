@@ -91,12 +91,13 @@ class Chirp(db.Model):
     timestamp = db.Column(db.TIMESTAMP, nullable=False)
     text = db.Column(db.String(290), nullable=False)
     image = db.Column(db.String(290), nullable=False)
-    likes = db.Column(db.Integer, nullable=False, default=0)
+    # likes = db.Column(db.Integer, nullable=False, default=0)
     rechirps = db.Column(db.Integer, nullable=False, default=0)
     comments = db.Column(db.Integer, nullable=False, default=0)
 
     user = db.relationship('User', backref='chirps')
     tags = db.relationship('Tag', secondary='chirps_tags', backref='chirps')
+    likes = db.relationship('Like', backref='chirp')
 
     def __init__(self, user_id, timestamp, text, image):
         self.id = 'chirp-' + str(uuid.uuid4())[:30]
@@ -111,6 +112,10 @@ class Chirp(db.Model):
         db.session.add(chirp)
         db.session.commit()
         return chirp.id
+    
+    def add_like(self, user_id):
+        like = Like.add_like(chirp_id=self.id, user_id=user_id)
+        return like
 
 
 class ChirpTag(db.Model):
@@ -165,3 +170,23 @@ class Tag(db.Model):
             return True
         else:
             return False
+
+
+
+class Like(db.Model):
+    __tablename__ = 'chirp_likes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    chirp_id = db.Column(db.String(36), db.ForeignKey('chirps.id'), nullable=False)
+    user_id = db.Column(db.String(50), db.ForeignKey('users.id'), nullable=False)
+
+    def __init__(self, chirp_id, user_id):
+        self.chirp_id = chirp_id
+        self.user_id = user_id
+
+    @classmethod
+    def add_like(cls, chirp_id, user_id):
+        like = cls(chirp_id=chirp_id, user_id=user_id)
+        db.session.add(like)
+        db.session.commit()
+        return like
