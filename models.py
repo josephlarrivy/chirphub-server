@@ -33,14 +33,14 @@ def generate_random_string(length=30):
 class User(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.String(30), primary_key=True, unique=True, nullable=False)
-    username = db.Column(db.String(20), unique=True, nullable=False)
+    id = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+    username = db.Column(db.String(30), unique=True, nullable=False)
     displayname = db.Column(db.String(50), nullable=False)
-    avatar = db.Column(db.String(200), nullable=False)
+    avatar = db.Column(db.String(300), nullable=False)
     password_hash = db.Column(db.String(100), nullable=False)
 
     def __init__(self, username, displayname, avatar, password):
-        self.id = str(uuid.uuid4())[:30]
+        self.id = 'user-' + str(uuid.uuid4())[:30]
         self.username = username
         self.displayname = displayname
         self.avatar = avatar
@@ -86,3 +86,34 @@ class User(db.Model):
             return True
         else:
             return False
+
+
+
+
+
+
+class Chirp(db.Model):
+    __tablename__ = 'chirps'
+
+    id = db.Column(db.String(36), primary_key=True, unique=True, nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    timestamp = db.Column(db.TIMESTAMP, nullable=False)
+    text = db.Column(db.String(290), nullable=False)
+    image = db.Column(db.String(290), nullable=False)
+    likes = db.Column(db.Integer, nullable=False, default=0)
+    rechirps = db.Column(db.Integer, nullable=False, default=0)
+    comments = db.Column(db.Integer, nullable=False, default=0)
+
+    def __init__(self, user_id, timestamp, text, image):
+        self.id = 'chirp-' + str(uuid.uuid4())[:30]
+        self.user_id = user_id
+        self.timestamp = timestamp
+        self.text = text
+        self.image = image
+
+    @classmethod
+    def post_chirp(cls, user_id, timestamp, text, image):
+        chirp = Chirp(user_id=user_id, timestamp=timestamp, text=text, image=image)
+        db.session.add(chirp)
+        db.session.commit()
+        return chirp

@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User
+from models import connect_db, db, User, Chirp
 
 
 app = Flask(__name__)
@@ -43,7 +43,19 @@ def login():
     token_string = token_bytes.decode('utf-8')
     return jsonify({'token': token_string})
 
-
+@app.route('/postChirp', methods=['POST'])
+def post_chirp():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    timestamp = data.get('timestamp')
+    text = data.get('text')
+    image = data.get('image')
+    print(user_id)
+    print(timestamp)
+    print(text)
+    print(image)
+    response = Chirp.post_chirp(user_id, timestamp, text, image)
+    return jsonify({'status': 'posted'})
 
 
 
