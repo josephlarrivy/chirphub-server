@@ -66,9 +66,29 @@ def add_tag():
     join = ChirpTag.connect_tag_to_chirp(chirp_id, tag_id)
     print(join)
         
-
     return jsonify({'status': 'testing'})
 
+@app.route('/getChirps', methods=['GET'])
+def get_chirps():
+    chirps = Chirp.query.all()
+    chirps_data = []
+
+    for chirp in reversed(chirps):
+        chirp_data = {
+            "id": chirp.id,
+            "username": chirp.user.username,
+            "displayName": chirp.user.displayname,
+            "avatar": chirp.user.avatar,
+            "timestamp": chirp.timestamp.isoformat(),
+            "text": chirp.text,
+            "image": chirp.image,
+            "likes": chirp.likes,
+            "rechirps": chirp.rechirps,
+            "comments": chirp.comments
+        }
+        chirps_data.append(chirp_data)
+
+    return jsonify({'data' : chirps_data})
 
 
 

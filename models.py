@@ -95,6 +95,7 @@ class Chirp(db.Model):
     rechirps = db.Column(db.Integer, nullable=False, default=0)
     comments = db.Column(db.Integer, nullable=False, default=0)
 
+    user = db.relationship('User', backref='chirps')
     tags = db.relationship('Tag', secondary='chirps_tags', backref='chirps')
 
     def __init__(self, user_id, timestamp, text, image):
@@ -136,12 +137,6 @@ class Tag(db.Model):
         self.id = 'tag-' + str(uuid.uuid4())[:30]
         self.name = name
 
-    # @classmethod
-    # def create_tag(cls, name):
-    #     tag = cls(name=name)
-    #     db.session.add(tag)
-    #     db.session.commit()
-    #     return tag
     @classmethod
     def create_tag(cls, name):
         existing_tag = cls.query.filter_by(name=name).first()
@@ -170,19 +165,3 @@ class Tag(db.Model):
             return True
         else:
             return False
-
-    
-    # @classmethod
-    # def add_tag_to_chirp(cls, tag_name, chirp_id):
-    #     tag = cls.get_tag_by_name(tag_name)
-    #     if not tag:
-    #         tag = cls.create_tag(tag_name)
-
-    #     chirp = Chirp.query.get(chirp_id)
-    #     print('111111111', tag.id)
-    #     print('222222222', chirp_id)
-    #     if chirp:
-    #         add_chirp_tag_to_db = ChirpTag.create_chirp_tag(cls, chirp_id, tag.id)
-    #         return 'added'
-    #     else:
-    #         return 'not added'
