@@ -32,7 +32,15 @@ def register_new_user():
     password = data.get('password')
     token_bytes = User.register(username, displayname, avatarColor, password)
     token_string = token_bytes.decode('utf-8')
-    print(token_string)
+    return jsonify({'token': token_string})
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    token_bytes = User.authenticate(username, password)
+    token_string = token_bytes.decode('utf-8')
     return jsonify({'token': token_string})
 
 
