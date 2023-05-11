@@ -50,7 +50,8 @@ class User(db.Model):
         payload = {
             'user_id': self.id,
             'username': self.username,
-            'avatar': self.avatar
+            'avatar': self.avatar,
+            'displayname': self.displayname,
         }
         encoded_payload = base64.urlsafe_b64encode(json.dumps(payload).encode())
         return encoded_payload
