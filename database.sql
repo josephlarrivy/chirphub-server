@@ -4,12 +4,12 @@ DROP TABLE tags CASCADE;
 DROP TABLE chirps_tags CASCADE;
 
 CREATE TABLE users (
-    id VARCHAR(50) PRIMARY KEY NOT NULL,
-    username VARCHAR(30) NOT NULL,
-    displayname VARCHAR(50) NOT NULL,
-    avatar VARCHAR(300) NOT NULL,
-    password_hash VARCHAR(100) NOT NULL,
-    UNIQUE (id, username)
+  id VARCHAR(50) PRIMARY KEY NOT NULL,
+  username VARCHAR(30) NOT NULL,
+  displayname VARCHAR(50) NOT NULL,
+  avatar VARCHAR(300) NOT NULL,
+  password_hash VARCHAR(100) NOT NULL,
+  UNIQUE (id, username)
 );
 
 CREATE TABLE chirps (
@@ -25,14 +25,14 @@ CREATE TABLE chirps (
 );
 
 CREATE TABLE tags (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL
+  id VARCHAR(36) PRIMARY KEY NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  UNIQUE (id, name)
 );
 
 CREATE TABLE chirps_tags (
   chirp_id VARCHAR(36) NOT NULL,
-  tag_id INT NOT NULL,
-  PRIMARY KEY (chirp_id, tag_id),
+  tag_id VARCHAR(36) NOT NULL,
   FOREIGN KEY (chirp_id) REFERENCES chirps (id),
   FOREIGN KEY (tag_id) REFERENCES tags (id)
 );

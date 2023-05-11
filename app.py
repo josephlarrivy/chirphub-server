@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User, Chirp
+from models import connect_db, db, User, Chirp, Tag, ChirpTag
 
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
 
-toolbar = DebugToolbarExtension(app)
+# toolbar = DebugToolbarExtension(app)
 
 
 @app.route('/test', methods=['POST'])
@@ -57,12 +57,16 @@ def post_chirp():
 @app.route('/addTag', methods=['POST'])
 def add_tag():
     data = request.get_json()
-    chirp_id = data.get(chirp_id)
-    tag_name = data.get(tag_name)
+    chirp_id = data.get('chirp_id')
+    tag_name = data.get('tag_name')
 
-    print(chirp_id, tag_name)
+    tag_id = Tag.create_tag(tag_name)
+    print(tag_id)
 
-    # response = Chirp.post_chirp(user_id, timestamp, text, image)
+    join = ChirpTag.connect_tag_to_chirp(chirp_id, tag_id)
+    print(join)
+        
+
     return jsonify({'status': 'testing'})
 
 

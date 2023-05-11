@@ -25,8 +25,6 @@ def generate_random_string(length=30):
 
 
 
-
-
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -114,4 +112,77 @@ class Chirp(db.Model):
         return chirp.id
 
 
+class ChirpTag(db.Model):
+    __tablename__ = 'chirps_tags'
 
+    chirp_id = db.Column(db.String(36), db.ForeignKey('chirps.id'), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True)
+
+    @classmethod
+    def connect_tag_to_chirp(cls, chirp_id, tag_id):
+        chirp_tag = cls(chirp_id=chirp_id, tag_id=tag_id)
+        db.session.add(chirp_tag)
+        db.session.commit()
+        return chirp_tag
+
+
+class Tag(db.Model):
+    __tablename__ = 'tags'
+
+    id = db.Column(db.String(36), primary_key=True, unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+
+    def __init__(self, name):
+        self.id = 'tag-' + str(uuid.uuid4())[:30]
+        self.name = name
+
+    # @classmethod
+    # def create_tag(cls, name):
+    #     tag = cls(name=name)
+    #     db.session.add(tag)
+    #     db.session.commit()
+    #     return tag
+    @classmethod
+    def create_tag(cls, name):
+        existing_tag = cls.query.filter_by(name=name).first()
+        if existing_tag:
+            return existing_tag.id
+        else:
+            tag = cls(name=name)
+            db.session.add(tag)
+            db.session.commit()
+            return tag.id
+
+    @classmethod
+    def get_tag_by_name(cls, name):
+        return cls.query.filter(cls.name.ilike(name)).first()
+
+    @classmethod
+    def get_all_tags(cls):
+        return cls.query.all()
+
+    @classmethod
+    def delete_tag(cls, tag_id):
+        tag = cls.query.get(tag_id)
+        if tag:
+            db.session.delete(tag)
+            db.session.commit()
+            return True
+        else:
+            return False
+
+    
+    # @classmethod
+    # def add_tag_to_chirp(cls, tag_name, chirp_id):
+    #     tag = cls.get_tag_by_name(tag_name)
+    #     if not tag:
+    #         tag = cls.create_tag(tag_name)
+
+    #     chirp = Chirp.query.get(chirp_id)
+    #     print('111111111', tag.id)
+    #     print('222222222', chirp_id)
+    #     if chirp:
+    #         add_chirp_tag_to_db = ChirpTag.create_chirp_tag(cls, chirp_id, tag.id)
+    #         return 'added'
+    #     else:
+    #         return 'not added'
