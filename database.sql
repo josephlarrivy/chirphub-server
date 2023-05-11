@@ -1,5 +1,7 @@
 DROP TABLE chirps CASCADE;
 DROP TABLE users CASCADE;
+DROP TABLE tags CASCADE;
+DROP TABLE chirps_tags CASCADE;
 
 CREATE TABLE users (
     id VARCHAR(50) PRIMARY KEY NOT NULL,
@@ -20,4 +22,17 @@ CREATE TABLE chirps (
   rechirps INT DEFAULT 0,
   comments INT DEFAULT 0,
   FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+CREATE TABLE tags (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE chirps_tags (
+  chirp_id VARCHAR(36) NOT NULL,
+  tag_id INT NOT NULL,
+  PRIMARY KEY (chirp_id, tag_id),
+  FOREIGN KEY (chirp_id) REFERENCES chirps (id),
+  FOREIGN KEY (tag_id) REFERENCES tags (id)
 );

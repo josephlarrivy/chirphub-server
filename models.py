@@ -8,9 +8,6 @@ import json
 import random
 import string
 
-
-
-
 secret_key = 'qwhdu&*UJdwqdqw'
 
 bcrypt = Bcrypt()
@@ -20,15 +17,15 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
-# def generate_token(payload):
-#     s = Serializer(secret_key, expires_in=3600)
-#     token = s.dumps(payload).decode('utf-8')
-#     return token
 
 def generate_random_string(length=30):
     characters = string.ascii_letters + string.digits
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
+
+
+
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -88,10 +85,6 @@ class User(db.Model):
             return False
 
 
-
-
-
-
 class Chirp(db.Model):
     __tablename__ = 'chirps'
 
@@ -103,6 +96,8 @@ class Chirp(db.Model):
     likes = db.Column(db.Integer, nullable=False, default=0)
     rechirps = db.Column(db.Integer, nullable=False, default=0)
     comments = db.Column(db.Integer, nullable=False, default=0)
+
+    tags = db.relationship('Tag', secondary='chirps_tags', backref='chirps')
 
     def __init__(self, user_id, timestamp, text, image):
         self.id = 'chirp-' + str(uuid.uuid4())[:30]
@@ -116,4 +111,7 @@ class Chirp(db.Model):
         chirp = Chirp(user_id=user_id, timestamp=timestamp, text=text, image=image)
         db.session.add(chirp)
         db.session.commit()
-        return chirp
+        return chirp.id
+
+
+

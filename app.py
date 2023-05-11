@@ -50,14 +50,20 @@ def post_chirp():
     timestamp = data.get('timestamp')
     text = data.get('text')
     image = data.get('image')
-    print(user_id)
-    print(timestamp)
-    print(text)
-    print(image)
     response = Chirp.post_chirp(user_id, timestamp, text, image)
-    return jsonify({'status': 'posted'})
+    return jsonify({'chirp_id': response})
 
 
+@app.route('/addTag', methods=['POST'])
+def add_tag():
+    data = request.get_json()
+    chirp_id = data.get(chirp_id)
+    tag_name = data.get(tag_name)
+
+    print(chirp_id, tag_name)
+
+    # response = Chirp.post_chirp(user_id, timestamp, text, image)
+    return jsonify({'status': 'testing'})
 
 
 
