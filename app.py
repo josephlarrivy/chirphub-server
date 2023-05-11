@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db
+from models import connect_db, db, User
 
 
 app = Flask(__name__)
@@ -17,9 +17,23 @@ connect_db(app)
 toolbar = DebugToolbarExtension(app)
 
 
-@app.route('/test', methods=['GET', 'POST'])
+@app.route('/test', methods=['POST'])
 def testing_api():
-    return 'test'
+    data = request.get_json()
+    response = User.test(data)
+    return response
+
+@app.route('/register', methods=['POST'])
+def register_new_user():
+    data = request.get_json()
+    username = data.get('username')
+    displayname = data.get('displayname')
+    avatarColor = data.get('avatarColor')
+    password = data.get('password')
+    token_bytes = User.register(username, displayname, avatarColor, password)
+    token_string = token_bytes.decode('utf-8')
+    print(token_string)
+    return jsonify({'token': token_string})
 
 
 
