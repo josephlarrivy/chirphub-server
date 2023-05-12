@@ -91,7 +91,6 @@ class Chirp(db.Model):
     timestamp = db.Column(db.TIMESTAMP, nullable=False)
     text = db.Column(db.String(290), nullable=False)
     image = db.Column(db.String(290), nullable=False)
-    # likes = db.Column(db.Integer, nullable=False, default=0)
     rechirps = db.Column(db.Integer, nullable=False, default=0)
     comments = db.Column(db.Integer, nullable=False, default=0)
 
@@ -186,7 +185,39 @@ class Like(db.Model):
 
     @classmethod
     def add_like(cls, chirp_id, user_id):
+        existing_like = cls.query.filter_by(chirp_id=chirp_id, user_id=user_id).first()
+        if existing_like:
+            return existing_like, False 
+
         like = cls(chirp_id=chirp_id, user_id=user_id)
         db.session.add(like)
         db.session.commit()
-        return like
+        return like, True
+
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+
+    id = db.Column(db.String(36), primary_key=True, unique=True, nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    timestamp = db.Column(db.TIMESTAMP, nullable=False)
+    text = db.Column(db.String(290), nullable=False)
+    chirp_id = db.Column(db.String(36), db.ForeignKey('chirps.id'), nullable=False)
+
+    user = db.relationship('User', backref='comments')
+    chirp = db.relationship('Chirp', backref='comment')
+
+    def __init__(self, user_id, timestamp, text, chirp_id):
+        self.id = 'comment-' + str(uuid.uuid4())[:30]
+        self.user_id = user_id
+        self.timestamp = timestamp
+        self.text = text
+        self.chirp_id = chirp_id
+
+    @classmethod
+    def post_chirp_comment(cls, user_id, timestamp, text, chirp_id):
+        comment = Comment(user_id=user_id, timestamp=timestamp, text=text, chirp_id=chirp_id)
+        db.session.add(comment)
+        db.session.commit()
+        return comment.id

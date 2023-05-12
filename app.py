@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User, Chirp, Tag, ChirpTag
+from models import connect_db, db, User, Chirp, Tag, ChirpTag, Comment
 
 
 app = Flask(__name__)
@@ -52,7 +52,6 @@ def post_chirp():
     image = data.get('image')
     response = Chirp.post_chirp(user_id, timestamp, text, image)
     return jsonify({'chirp_id': response})
-
 
 @app.route('/addTag', methods=['POST'])
 def add_tag():
@@ -115,6 +114,19 @@ def delete_chirp(chirp_id):
 
     return jsonify({'message': 'Chirp deleted successfully'})
 
+@app.route('/postChirpComment', methods=['POST'])
+def post_chirp_comment():
+    data = request.get_json()
+
+    user_id = data.get('user_id')
+    timestamp = data.get('timestamp')
+    text = data.get('text')
+    chirp_id = data.get('chirp_id')
+
+    print((user_id, timestamp, text, chirp_id))
+
+    response = Comment.post_chirp_comment(user_id, timestamp, text, chirp_id)
+    return jsonify({'chirp_id': response})
 
 
 

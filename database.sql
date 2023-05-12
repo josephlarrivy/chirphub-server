@@ -1,8 +1,9 @@
-DROP TABLE chirps CASCADE;
-DROP TABLE users CASCADE;
-DROP TABLE tags CASCADE;
-DROP TABLE chirps_tags CASCADE;
-DROP TABLE chirp_likes CASCADE;
+DROP TABLE IF EXISTS chirps_tags;
+DROP TABLE IF EXISTS chirp_likes;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS chirps;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
   id VARCHAR(50) PRIMARY KEY NOT NULL,
@@ -19,7 +20,6 @@ CREATE TABLE chirps (
   timestamp TIMESTAMP NOT NULL,
   text VARCHAR(290) NOT NULL,
   image VARCHAR(290) NOT NULL,
-  likes INT DEFAULT 0,
   rechirps INT DEFAULT 0,
   comments INT DEFAULT 0,
   FOREIGN KEY (user_id) REFERENCES users (id)
@@ -36,6 +36,16 @@ CREATE TABLE chirps_tags (
   tag_id VARCHAR(36) NOT NULL,
   FOREIGN KEY (chirp_id) REFERENCES chirps (id),
   FOREIGN KEY (tag_id) REFERENCES tags (id)
+);
+
+CREATE TABLE comments (
+  id VARCHAR(50) PRIMARY KEY NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
+  timestamp TIMESTAMP NOT NULL,
+  text VARCHAR(290) NOT NULL,
+  chirp_id VARCHAR(36) NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  FOREIGN KEY (chirp_id) REFERENCES chirps (id)
 );
 
 CREATE TABLE chirp_likes (
