@@ -125,6 +125,28 @@ class Chirp(db.Model):
         else:
             return "[]"
 
+    @classmethod
+    def get_chirps_by_tag_id(cls, tag_id):
+        chirps = cls.query.filter(cls.tags.any(id=tag_id)).all()
+        chirps_to_return = []
+
+        for chirp in chirps:
+            chirps_to_return.append({
+            "id": chirp.id,
+            "username": chirp.user.username,
+            "displayName": chirp.user.displayname,
+            "avatar": chirp.user.avatar,
+            "timestamp": chirp.timestamp.isoformat(),
+            "text": chirp.text,
+            "image": chirp.image,
+            "likes": len(chirp.likes),
+            "rechirps": chirp.rechirps,
+            "comments": len(chirp.comments)
+        })
+
+        return chirps_to_return
+
+
 
 
 class ChirpTag(db.Model):

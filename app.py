@@ -149,6 +149,12 @@ def get_tags_by_chirp_id(chirp_id):
 
     return jsonify({'data': tags})
 
+@app.route('/getChirpsByTagId/<tag_id>', methods=['POST'])
+def get_chirps_by_tag_id(tag_id):
+    chirps = Chirp.get_chirps_by_tag_id(tag_id)
+
+    return jsonify({'data': chirps})
+
 
 
 
