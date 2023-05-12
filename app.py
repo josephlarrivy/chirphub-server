@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User, Chirp, Tag, ChirpTag, Comment
+from models import connect_db, db, User, Chirp, Tag, ChirpTag, Comment, Like
 
 
 app = Flask(__name__)
@@ -103,15 +103,11 @@ def like_chirp(chirp_id, user_id):
 
 @app.route('/deleteChirp/<chirp_id>', methods=['POST'])
 def delete_chirp(chirp_id):
-    chirp = Chirp.query.get(chirp_id)
-    if chirp:
-        ChirpTag.query.filter_by(chirp_id=chirp_id).delete()
+    Like.query.filter_by(chirp_id=chirp_id).delete()
+    db.session.execute(text("DELETE FROM chirps_tags WHERE chirp_id = :id"), {'id': chirp_id})
 
-        db.session.delete(chirp)
-        db.session.commit()
-        return "Chirp deleted successfully"
-    else:
-        return "Chirp not found"
+    Chirp.query.filter_by(id=chirp_id).delete()
+    db.session.commit()
 
 @app.route('/postChirpComment', methods=['POST'])
 def post_chirp_comment():
