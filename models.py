@@ -116,13 +116,25 @@ class Chirp(db.Model):
         like = Like.add_like(chirp_id=self.id, user_id=user_id)
         return like
 
+    @classmethod
+    def get_tags_by_chirp_id(cls, chirp_id):
+        chirp = cls.query.get(chirp_id)
+        if chirp:
+            tags_data = [{"tag_id": tag.id, "tag_name": tag.name} for tag in chirp.tags]
+            return tags_data
+        else:
+            return "[]"
+
 
 
 class ChirpTag(db.Model):
     __tablename__ = 'chirps_tags'
 
     chirp_id = db.Column(db.String(36), db.ForeignKey('chirps.id'), primary_key=True)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True)
+    tag_id = db.Column(db.String(36), db.ForeignKey('tags.id'), primary_key=True)
+
+    chirp = db.relationship('Chirp', backref='chirp_tags')
+    tag = db.relationship('Tag', backref='chirp_tags')
 
     @classmethod
     def connect_tag_to_chirp(cls, chirp_id, tag_id):

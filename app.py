@@ -143,6 +143,11 @@ def get_comments_by_chirp_id(chirp_id):
 
     return jsonify({'data': comments_data})
 
+@app.route('/getTagsByChirpId/<chirp_id>', methods=['POST'])
+def get_tags_by_chirp_id(chirp_id):
+    tags = Chirp.get_tags_by_chirp_id(chirp_id)
+
+    return jsonify({'data': tags})
 
 
 
