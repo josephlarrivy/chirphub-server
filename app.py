@@ -104,13 +104,14 @@ def like_chirp(chirp_id, user_id):
 @app.route('/deleteChirp/<chirp_id>', methods=['POST'])
 def delete_chirp(chirp_id):
     chirp = Chirp.query.get(chirp_id)
-    if chirp is None:
-        return jsonify({'message': 'Chirp not found'}), 404
+    if chirp:
+        ChirpTag.query.filter_by(chirp_id=chirp_id).delete()
 
-    db.session.delete(chirp)
-    db.session.commit()
-
-    return jsonify({'message': 'Chirp deleted successfully'})
+        db.session.delete(chirp)
+        db.session.commit()
+        return "Chirp deleted successfully"
+    else:
+        return "Chirp not found"
 
 @app.route('/postChirpComment', methods=['POST'])
 def post_chirp_comment():
@@ -155,9 +156,17 @@ def get_chirps_by_tag_id(tag_id):
 
     return jsonify({'data': chirps})
 
+@app.route('/getAllTagsButCurrent/<tag_id>', methods=['POST'])
+def get_all_tags_but_current(tag_id):
+    tags = Tag.all_tags_except_one(tag_id)
 
+    return jsonify({'data': tags})
 
+@app.route('/getAllTagsAsObjects', methods=['GET'])
+def get_all_tags_as_ojects():
+    tags = Tag.get_all_tags_as_ojects()
 
+    return jsonify({'data': tags})
 
 
 

@@ -17,12 +17,16 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
-
 def generate_random_string(length=30):
     characters = string.ascii_letters + string.digits
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
 
+
+
+
+
+###########################################################
 
 
 class User(db.Model):
@@ -204,6 +208,22 @@ class Tag(db.Model):
             return True
         else:
             return False
+
+    @classmethod
+    def all_tags_except_one(cls, tag_id):
+        tags = cls.query.filter(Tag.id != tag_id).all()
+        tags_to_return = []
+        for tag in tags:
+            tags_to_return.append({'tagId':tag.id, 'tagName':tag.name})
+        return tags_to_return
+
+    @classmethod
+    def get_all_tags_as_ojects(cls):
+        tags = cls.query.all()
+        tags_to_return = []
+        for tag in tags:
+            tags_to_return.append({'tagId':tag.id, 'tagName':tag.name})
+        return tags_to_return
 
 
 
