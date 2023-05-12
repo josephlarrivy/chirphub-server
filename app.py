@@ -90,9 +90,6 @@ def get_chirps():
 
     return jsonify({'data' : chirps_data})
 
-
-
-
 @app.route('/likeChirp/<chirp_id>/<user_id>', methods=['POST'])
 def like_chirp(chirp_id, user_id):
     chirp = Chirp.query.get(chirp_id)
@@ -106,6 +103,17 @@ def like_chirp(chirp_id, user_id):
     like = chirp.add_like(user_id)
 
     return jsonify({'message': 'Chirp liked successfully'})
+
+@app.route('/deleteChirp/<chirp_id>', methods=['POST'])
+def delete_chirp(chirp_id):
+    chirp = Chirp.query.get(chirp_id)
+    if chirp is None:
+        return jsonify({'message': 'Chirp not found'}), 404
+
+    db.session.delete(chirp)
+    db.session.commit()
+
+    return jsonify({'message': 'Chirp deleted successfully'})
 
 
 
