@@ -14,8 +14,6 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
 
-# toolbar = DebugToolbarExtension(app)
-
 
 @app.route('/test', methods=['POST'])
 def testing_api():
@@ -83,7 +81,7 @@ def get_chirps():
             "image": chirp.image,
             "likes": len(chirp.likes),
             "rechirps": chirp.rechirps,
-            "comments": chirp.comments
+            "comments": len(chirp.comments)
         }
         chirps_data.append(chirp_data)
 
@@ -127,6 +125,28 @@ def post_chirp_comment():
 
     response = Comment.post_chirp_comment(user_id, timestamp, text, chirp_id)
     return jsonify({'chirp_id': response})
+
+@app.route('/getCommentsByChirpId/<chirp_id>', methods=['POST'])
+def get_comments_by_chirp_id(chirp_id):
+    comments = Comment.query.filter_by(chirp_id=chirp_id).all()
+    comments_data = []
+
+    for comment in reversed(comments):
+        comment_data = {
+            "username": comment.user.username,
+            "displayName": comment.user.displayname,
+            "avatar": comment.user.avatar,
+            "timestamp": comment.timestamp.isoformat(),
+            "text": comment.text,
+        }
+        comments_data.append(comment_data)
+
+    return jsonify({'data': comments_data})
+
+
+
+
+
 
 
 

@@ -92,11 +92,11 @@ class Chirp(db.Model):
     text = db.Column(db.String(290), nullable=False)
     image = db.Column(db.String(290), nullable=False)
     rechirps = db.Column(db.Integer, nullable=False, default=0)
-    comments = db.Column(db.Integer, nullable=False, default=0)
 
     user = db.relationship('User', backref='chirps')
     tags = db.relationship('Tag', secondary='chirps_tags', backref='chirps')
     likes = db.relationship('Like', backref='chirp')
+    comments = db.relationship('Comment', backref='chirp_comments', cascade='delete, delete-orphan')
 
     def __init__(self, user_id, timestamp, text, image):
         self.id = 'chirp-' + str(uuid.uuid4())[:30]
@@ -111,10 +111,11 @@ class Chirp(db.Model):
         db.session.add(chirp)
         db.session.commit()
         return chirp.id
-    
+
     def add_like(self, user_id):
         like = Like.add_like(chirp_id=self.id, user_id=user_id)
         return like
+
 
 
 class ChirpTag(db.Model):
