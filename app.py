@@ -103,11 +103,11 @@ def like_chirp(chirp_id, user_id):
 
 @app.route('/deleteChirp/<chirp_id>', methods=['POST'])
 def delete_chirp(chirp_id):
-    Like.query.filter_by(chirp_id=chirp_id).delete()
-    db.session.execute(text("DELETE FROM chirps_tags WHERE chirp_id = :id"), {'id': chirp_id})
-
-    Chirp.query.filter_by(id=chirp_id).delete()
-    db.session.commit()
+    success = Chirp.delete_chirp(chirp_id)
+    if success:
+        return jsonify(message="Chirp deleted successfully"), 202
+    else:
+        return jsonify(message="Chirp not found or failed to delete"), 204
 
 @app.route('/postChirpComment', methods=['POST'])
 def post_chirp_comment():

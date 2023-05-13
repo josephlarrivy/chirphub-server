@@ -133,7 +133,6 @@ class Chirp(db.Model):
     def get_chirps_by_tag_id(cls, tag_id):
         chirps = cls.query.filter(cls.tags.any(id=tag_id)).all()
         chirps_to_return = []
-
         for chirp in chirps:
             chirps_to_return.append({
             "id": chirp.id,
@@ -147,9 +146,27 @@ class Chirp(db.Model):
             "rechirps": chirp.rechirps,
             "comments": len(chirp.comments)
         })
-
         return chirps_to_return
 
+    @classmethod
+    def delete_chirp(cls, chirp_id):
+        chirp = cls.query.get(chirp_id)
+        if chirp:
+            try:
+                # Delete associated ChirpTag records
+                ChirpTag.query.filter_by(chirp_id=chirp_id).delete()
+                Like.query.filter_by(chirp_id=chirp_id).delete()
+                Comment.query.filter_by(chirp_id=chirp_id).delete()
+
+                # Delete the chirp
+                db.session.delete(chirp)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return False
+            return True
+        else:
+            return False
 
 
 
@@ -159,7 +176,7 @@ class ChirpTag(db.Model):
     chirp_id = db.Column(db.String(36), db.ForeignKey('chirps.id'), primary_key=True)
     tag_id = db.Column(db.String(36), db.ForeignKey('tags.id'), primary_key=True)
 
-    chirp = db.relationship('Chirp', backref='chirp_tags')
+    chirp = db.relationship('Chirp', backref='chirp_tags', cascade="delete")
     tag = db.relationship('Tag', backref='chirp_tags')
 
     @classmethod
