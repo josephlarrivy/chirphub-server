@@ -28,6 +28,11 @@ def register_new_user():
     displayname = data.get('displayname')
     avatarColor = data.get('avatarColor')
     password = data.get('password')
+
+    existing_user = User.query.filter_by(username=username).first()
+    if existing_user:
+        return jsonify({'error': 'Username taken'})
+    
     token_bytes = User.register(username, displayname, avatarColor, password)
     token_string = token_bytes.decode('utf-8')
     return jsonify({'token': token_string})
@@ -125,7 +130,8 @@ def post_chirp_comment():
 
 @app.route('/getCommentsByChirpId/<chirp_id>', methods=['POST'])
 def get_comments_by_chirp_id(chirp_id):
-    comments = Comment.query.filter_by(chirp_id=chirp_id).all()
+    comments = Comment.query.filter_by(chirp_id=chirp_id).order_by(Comment.timestamp).all()
+
     comments_data = []
 
     for comment in reversed(comments):
