@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS chirps;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS bookmarks;
 
 CREATE TABLE users (
   id VARCHAR(50) PRIMARY KEY NOT NULL,
@@ -54,4 +55,12 @@ CREATE TABLE chirp_likes (
   user_id VARCHAR(50) NOT NULL,
   FOREIGN KEY (chirp_id) REFERENCES chirps (id),
   FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+CREATE TABLE bookmarks (
+  id SERIAL PRIMARY KEY,
+  user_id VARCHAR(50) NOT NULL,
+  chirp_id VARCHAR(36) NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  FOREIGN KEY (chirp_id) REFERENCES chirps (id)
 );

@@ -38,6 +38,8 @@ class User(db.Model):
     avatar = db.Column(db.String(300), nullable=False)
     password_hash = db.Column(db.String(100), nullable=False)
 
+    bookmarks = db.relationship('Bookmark', back_populates='user')
+
     def __init__(self, username, displayname, avatar, password):
         self.id = 'user-' + str(uuid.uuid4())[:30]
         self.username = username
@@ -101,6 +103,7 @@ class Chirp(db.Model):
     tags = db.relationship('Tag', secondary='chirps_tags', backref='chirps')
     likes = db.relationship('Like', backref='chirp')
     comments = db.relationship('Comment', backref='chirp_comments', cascade='delete, delete-orphan')
+    bookmarks = db.relationship('Bookmark', back_populates='chirp')
 
     def __init__(self, user_id, timestamp, text, image):
         self.id = 'chirp-' + str(uuid.uuid4())[:30]
@@ -157,6 +160,7 @@ class Chirp(db.Model):
                 ChirpTag.query.filter_by(chirp_id=chirp_id).delete()
                 Like.query.filter_by(chirp_id=chirp_id).delete()
                 Comment.query.filter_by(chirp_id=chirp_id).delete()
+                Bookmark.query.filter_by(chirp_id=chirp_id).delete()
 
                 # Delete the chirp
                 db.session.delete(chirp)
@@ -293,3 +297,29 @@ class Comment(db.Model):
         db.session.add(comment)
         db.session.commit()
         return comment.id
+
+class Bookmark(db.Model):
+    __tablename__ = 'bookmarks'
+
+    def __init__(self, user_id, chirp_id):
+        self.user_id = user_id
+        self.chirp_id = chirp_id
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), db.ForeignKey('users.id'))
+    chirp_id = db.Column(db.String(36), db.ForeignKey('chirps.id'))
+
+    user = db.relationship('User', back_populates='bookmarks')
+    chirp = db.relationship('Chirp', back_populates='bookmarks')
+
+    @classmethod
+    def add_bookmark(cls, user_id, chirp_id):
+        bookmark = Bookmark(user_id, chirp_id)
+        db.session.add(bookmark)
+        db.session.commit()
+        return bookmark.id
+
+    @classmethod
+    def get_bookmarks_by_user(cls, user_id):
+        bookmarks = cls.query.filter_by(user_id=user_id).all()
+        return bookmarks

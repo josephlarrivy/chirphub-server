@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User, Chirp, Tag, ChirpTag, Comment, Like
+from models import connect_db, db, User, Chirp, Tag, ChirpTag, Comment, Like, Bookmark
 
 
 app = Flask(__name__)
@@ -163,6 +163,49 @@ def get_all_tags_as_ojects():
     tags = Tag.get_all_tags_as_ojects()
 
     return jsonify({'data': tags})
+
+@app.route('/addBookmark', methods=['POST'])
+def add_bookmark():
+    data = request.get_json()
+
+    user_id = data.get('user_id')
+    chirp_id = data.get('chirp_id')
+
+    response = Bookmark.add_bookmark(user_id, chirp_id)
+    return jsonify({'data': response})
+
+@app.route('/getBookmarkedChirpsByUser', methods=['POST'])
+def get_bookmarked_chirps():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    # print(user_id)
+    
+    bookmarks = Bookmark.get_bookmarks_by_user(user_id)
+    chirp_ids = [bookmark.chirp_id for bookmark in bookmarks]
+    
+    chirps = Chirp.query.filter(Chirp.id.in_(chirp_ids)).all()
+    # print(chirps)
+
+    chirps_data = []
+    for chirp in reversed(chirps):
+        chirp_data = {
+            'id': chirp.id,
+            'username': chirp.user.username,
+            'displayName': chirp.user.displayname,
+            'avatar': chirp.user.avatar,
+            'timestamp': chirp.timestamp.isoformat(),
+            'text': chirp.text,
+            'image': chirp.image,
+            'likes': len(chirp.likes),
+            'rechirps': chirp.rechirps,
+            'comments': len(chirp.comments)
+        }
+        chirps_data.append(chirp_data)
+
+    return jsonify({'data': chirps_data})
+
+
+
 
 
 
