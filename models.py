@@ -236,7 +236,7 @@ class Tag(db.Model):
 
     @classmethod
     def get_all_tags_as_ojects(cls):
-        tags = cls.query.all()
+        tags = cls.query.order_by(cls.name).all()
         tags_to_return = []
         for tag in tags:
             tags_to_return.append({'tagId':tag.id, 'tagName':tag.name})
