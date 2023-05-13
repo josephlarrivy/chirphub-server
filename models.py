@@ -323,3 +323,13 @@ class Bookmark(db.Model):
     def get_bookmarks_by_user(cls, user_id):
         bookmarks = cls.query.filter_by(user_id=user_id).all()
         return bookmarks
+
+    @classmethod
+    def delete_bookmark(cls, user_id, chirp_id):
+        bookmark = cls.query.filter_by(user_id=user_id, chirp_id=chirp_id).first()
+        if bookmark:
+            db.session.delete(bookmark)
+            db.session.commit()
+            return True
+        else:
+            return False

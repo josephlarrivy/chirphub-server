@@ -204,7 +204,15 @@ def get_bookmarked_chirps():
 
     return jsonify({'data': chirps_data})
 
+@app.route('/removeBookmark', methods=['POST'])
+def remove_bookmark():
+    data = request.get_json()
 
+    user_id = data.get('user_id')
+    chirp_id = data.get('chirp_id')
+
+    response = Bookmark.delete_bookmark(user_id, chirp_id)
+    return jsonify({'data': response})
 
 
 
