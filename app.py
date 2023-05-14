@@ -27,7 +27,6 @@ def testing_api():
     return response
 
 @app.route('/register', methods=['POST'])
-@CORS()
 def register_new_user():
     data = request.get_json()
     username = data.get('username')
