@@ -77,8 +77,16 @@ def add_tag():
         
     return jsonify({'status': 'testing'})
 
-@app.route('/getChirps', methods=['GET'])
+@app.route('/getChirps', methods=['GET', 'OPTIONS'])
 def get_chirps():
+    if request.method == 'OPTIONS':
+        response = jsonify({'message': 'Preflight request received'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        return response
+
+        
     chirps = Chirp.query.all()
     chirps_data = []
 
