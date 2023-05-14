@@ -31,20 +31,24 @@ def register_new_user():
 
     existing_user = User.query.filter_by(username=username).first()
     if existing_user:
-        return jsonify({'error': 'Username taken'})
+        return jsonify({'error': 'Username taken'}), 409
     
     token_bytes = User.register(username, displayname, avatarColor, password)
     token_string = token_bytes.decode('utf-8')
-    return jsonify({'token': token_string})
+    return jsonify({'token': token_string}), 200
 
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    
     token_bytes = User.authenticate(username, password)
+    if token_bytes is None:
+        return jsonify({'error': 'Invalid username or password'}), 401
+
     token_string = token_bytes.decode('utf-8')
-    return jsonify({'token': token_string})
+    return jsonify({'token': token_string}), 200
 
 @app.route('/postChirp', methods=['POST'])
 def post_chirp():
