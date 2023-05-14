@@ -156,13 +156,11 @@ class Chirp(db.Model):
         chirp = cls.query.get(chirp_id)
         if chirp:
             try:
-                # Delete associated ChirpTag records
                 ChirpTag.query.filter_by(chirp_id=chirp_id).delete()
                 Like.query.filter_by(chirp_id=chirp_id).delete()
                 Comment.query.filter_by(chirp_id=chirp_id).delete()
                 Bookmark.query.filter_by(chirp_id=chirp_id).delete()
 
-                # Delete the chirp
                 db.session.delete(chirp)
                 db.session.commit()
             except Exception as e:
