@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, db, User, Chirp, Tag, ChirpTag, Comment, Like, Bookmark
-from itsdangerous import TimedJSONWebSignatureSerializer
 
 
 
