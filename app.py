@@ -7,7 +7,7 @@ from models import connect_db, db, User, Chirp, Tag, ChirpTag, Comment, Like, Bo
 app = Flask(__name__)
 CORS(app)
 # app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///chirphub-db"
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql-shallow-58332"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://lqcsyelchadpfh:09adcf69af5a2bedecea33c10504fddc608b506fcc76b67ee6dd0672b74333f0@ec2-34-197-91-131.compute-1.amazonaws.com:5432/df4c5lrgso4jrp"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SECRET_KEY"] = "qwhdu&*UJdwqdqw"
