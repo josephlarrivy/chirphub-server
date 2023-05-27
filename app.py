@@ -9,9 +9,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 CORS(app)
-# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///chirphub-db"
 # app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://lqcsyelchadpfh:09adcf69af5a2bedecea33c10504fddc608b506fcc76b67ee6dd0672b74333f0@ec2-34-197-91-131.compute-1.amazonaws.com:5432/df4c5lrgso4jrp"
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', "postgresql:///chirphub-data")
+
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///chirphub-db"
+# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL', "postgresql:///chirphub-data")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SECRET_KEY"] = "qwhdu&*UJdwqdqw"
@@ -151,6 +153,7 @@ def get_comments_by_chirp_id(chirp_id):
             "avatar": comment.user.avatar,
             "timestamp": comment.timestamp.isoformat(),
             "text": comment.text,
+            "id": comment.id
         }
         comments_data.append(comment_data)
 
@@ -230,6 +233,13 @@ def remove_bookmark():
     response = Bookmark.delete_bookmark(user_id, chirp_id)
     return jsonify({'data': response})
 
+@app.route('/deleteComment/<comment_id>', methods=['POST'])
+def delete_comment(comment_id):
+    success = Comment.delete_comment(comment_id)
+    if success:
+        return jsonify(message="Comment deleted successfully"), 202
+    else:
+        return jsonify(message="Comment not found or failed to delete"), 204
 
 
 

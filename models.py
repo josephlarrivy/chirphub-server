@@ -296,6 +296,22 @@ class Comment(db.Model):
         db.session.commit()
         return comment.id
 
+    @classmethod
+    def delete_comment(cls, comment_id):
+        comment = cls.query.get(comment_id)
+        if comment:
+            try:
+                db.session.delete(comment)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return False
+            return True
+        else:
+            return False
+
+
+
 class Bookmark(db.Model):
     __tablename__ = 'bookmarks'
 
